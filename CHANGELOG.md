@@ -1,5 +1,56 @@
 # Changelog
 
+## 3.26.0 (2026-03-05)
+
+Full Changelog: [v3.25.0...v3.26.0](https://github.com/openai/openai-go/compare/v3.25.0...v3.26.0)
+
+### Features
+
+* **api:** The GA ComputerTool now uses the CompuerTool class. The 'computer_use_preview' tool is moved to ComputerUsePreview ([347418b](https://github.com/openai/openai-go/commit/347418be8d4fa33881d9ac30f6c7132f2f545f2b))
+
+## 3.25.0 (2026-03-05)
+
+Full Changelog: [v3.24.0...v3.25.0](https://github.com/openai/openai-go/compare/v3.24.0...v3.25.0)
+
+### Features
+
+* **api:** gpt-5.4, tool search tool, and new computer tool ([101826d](https://github.com/openai/openai-go/commit/101826dd757a0213aecb4eaa6332866657b9aa83))
+* **api:** remove Phase from input/output messages, PromptCacheKey from responses ([961b8ca](https://github.com/openai/openai-go/commit/961b8ca27923beca8aa08d4a8e3382c2da9d61db))
+
+
+### Bug Fixes
+
+* **api:** internal schema fixes ([fe5f7cd](https://github.com/openai/openai-go/commit/fe5f7cdb34d11dd18caa503716cae1512b245053))
+* **api:** manual updates ([70b02c8](https://github.com/openai/openai-go/commit/70b02c8f63c98a17813dc6cb7f7707fb2bba81c5))
+* **api:** readd phase ([548aff8](https://github.com/openai/openai-go/commit/548aff8ad8b96518f5549ec3bc98da71e9b7f540))
+
+
+### Chores
+
+* **internal:** codegen related update ([ab733b9](https://github.com/openai/openai-go/commit/ab733b91db39e99e292696530340333c065e04b9))
+* **internal:** codegen related update ([23d1831](https://github.com/openai/openai-go/commit/23d1831cb5ca6f61ca8575737cec17e2f347818b))
+* **internal:** reduce warnings ([2963312](https://github.com/openai/openai-go/commit/2963312c075fa9a30abad32b1e90813229b22129))
+
+## 3.24.0 (2026-02-24)
+
+Full Changelog: [v3.23.0...v3.24.0](https://github.com/openai/openai-go/compare/v3.23.0...v3.24.0)
+
+### Features
+
+* **api:** add phase ([72366d8](https://github.com/openai/openai-go/commit/72366d895c78b5188a590ee7f9b572b567447b32))
+
+
+### Bug Fixes
+
+* **api:** fix phase enum ([5712ebf](https://github.com/openai/openai-go/commit/5712ebf1f30e63d148a72c451f1df48620b14a2d))
+* **api:** phase docs ([b67dd66](https://github.com/openai/openai-go/commit/b67dd6680110c013c1660c37dde5467e2cd50030))
+
+
+### Chores
+
+* **internal:** move custom custom `json` tags to `api` ([0735303](https://github.com/openai/openai-go/commit/0735303849ece03c57adbb0f899d7f3a0b60bc50))
+* **internal:** refactor sse event parsing ([45dc6bb](https://github.com/openai/openai-go/commit/45dc6bb18120330de4470739a07b13f08d7f7666))
+
 ## 3.24.0 (2026-02-24)
 
 Full Changelog: [v3.23.0...v3.24.0](https://github.com/openai/openai-go/compare/v3.23.0...v3.24.0)
