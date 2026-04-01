@@ -57,7 +57,7 @@ func (r *FineTuningJobService) New(ctx context.Context, body FineTuningJobNewPar
 	opts = slices.Concat(r.Options, opts)
 	path := "fine_tuning/jobs"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get info about a fine-tuning job.
@@ -67,11 +67,11 @@ func (r *FineTuningJobService) Get(ctx context.Context, fineTuningJobID string, 
 	opts = slices.Concat(r.Options, opts)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s", fineTuningJobID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List your organization's fine-tuning jobs
@@ -102,11 +102,11 @@ func (r *FineTuningJobService) Cancel(ctx context.Context, fineTuningJobID strin
 	opts = slices.Concat(r.Options, opts)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s/cancel", fineTuningJobID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Get status updates for a fine-tuning job.
@@ -116,7 +116,7 @@ func (r *FineTuningJobService) ListEvents(ctx context.Context, fineTuningJobID s
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s/events", fineTuningJobID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -141,11 +141,11 @@ func (r *FineTuningJobService) Pause(ctx context.Context, fineTuningJobID string
 	opts = slices.Concat(r.Options, opts)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s/pause", fineTuningJobID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Resume a fine-tune job.
@@ -153,11 +153,11 @@ func (r *FineTuningJobService) Resume(ctx context.Context, fineTuningJobID strin
 	opts = slices.Concat(r.Options, opts)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s/resume", fineTuningJobID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // The `fine_tuning.job` object represents a fine-tuning job that has been created
@@ -182,7 +182,7 @@ type FineTuningJob struct {
 	// The base model that is being fine-tuned.
 	Model string `json:"model" api:"required"`
 	// The object type, which is always "fine_tuning.job".
-	Object constant.FineTuningJob `json:"object" api:"required"`
+	Object constant.FineTuningJob `json:"object" default:"fine_tuning.job"`
 	// The organization that owns the fine-tuning job.
 	OrganizationID string `json:"organization_id" api:"required"`
 	// The compiled results file ID(s) for the fine-tuning job. You can retrieve the
@@ -473,7 +473,7 @@ type FineTuningJobEvent struct {
 	// The message of the event.
 	Message string `json:"message" api:"required"`
 	// The object type, which is always "fine_tuning.job.event".
-	Object constant.FineTuningJobEvent `json:"object" api:"required"`
+	Object constant.FineTuningJobEvent `json:"object" default:"fine_tuning.job.event"`
 	// The data associated with the event.
 	Data any `json:"data"`
 	// The type of event.
@@ -554,7 +554,7 @@ func (r *FineTuningJobWandbIntegration) UnmarshalJSON(data []byte) error {
 
 type FineTuningJobWandbIntegrationObject struct {
 	// The type of the integration being enabled for the fine-tuning job
-	Type constant.Wandb `json:"type" api:"required"`
+	Type constant.Wandb `json:"type" default:"wandb"`
 	// The settings for your integration with Weights and Biases. This payload
 	// specifies the project that metrics will be sent to. Optionally, you can set an
 	// explicit display name for your run, add tags to your run, and set a default
@@ -772,7 +772,7 @@ type FineTuningJobNewParamsIntegration struct {
 	// is supported.
 	//
 	// This field can be elided, and will marshal its zero value as "wandb".
-	Type constant.Wandb `json:"type" api:"required"`
+	Type constant.Wandb `json:"type" default:"wandb"`
 	paramObj
 }
 

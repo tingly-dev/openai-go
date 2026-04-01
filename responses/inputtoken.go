@@ -43,12 +43,12 @@ func (r *InputTokenService) Count(ctx context.Context, body InputTokenCountParam
 	opts = slices.Concat(r.Options, opts)
 	path := "responses/input_tokens"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type InputTokenCountResponse struct {
 	InputTokens int64                        `json:"input_tokens" api:"required"`
-	Object      constant.ResponseInputTokens `json:"object" api:"required"`
+	Object      constant.ResponseInputTokens `json:"object" default:"response.input_tokens"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		InputTokens respjson.Field

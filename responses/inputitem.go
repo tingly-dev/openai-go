@@ -46,7 +46,7 @@ func (r *InputItemService) List(ctx context.Context, responseID string, query In
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if responseID == "" {
 		err = errors.New("missing required response_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("responses/%s/input_items", responseID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -77,7 +77,7 @@ type ResponseItemList struct {
 	// The ID of the last item in the list.
 	LastID string `json:"last_id" api:"required"`
 	// The type of object returned, must be `list`.
-	Object constant.List `json:"object" api:"required"`
+	Object constant.List `json:"object" default:"list"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Data        respjson.Field

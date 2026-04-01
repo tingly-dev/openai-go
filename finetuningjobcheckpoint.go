@@ -48,7 +48,7 @@ func (r *FineTuningJobCheckpointService) List(ctx context.Context, fineTuningJob
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("fine_tuning/jobs/%s/checkpoints", fineTuningJobID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -82,7 +82,7 @@ type FineTuningJobCheckpoint struct {
 	// Metrics at the step number during the fine-tuning job.
 	Metrics FineTuningJobCheckpointMetrics `json:"metrics" api:"required"`
 	// The object type, which is always "fine_tuning.job.checkpoint".
-	Object constant.FineTuningJobCheckpoint `json:"object" api:"required"`
+	Object constant.FineTuningJobCheckpoint `json:"object" default:"fine_tuning.job.checkpoint"`
 	// The step number that the checkpoint was created at.
 	StepNumber int64 `json:"step_number" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].

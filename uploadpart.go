@@ -56,11 +56,11 @@ func (r *UploadPartService) New(ctx context.Context, uploadID string, body Uploa
 	opts = slices.Concat(r.Options, opts)
 	if uploadID == "" {
 		err = errors.New("missing required upload_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("uploads/%s/parts", uploadID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // The upload Part represents a chunk of bytes we can add to an Upload object.
@@ -70,7 +70,7 @@ type UploadPart struct {
 	// The Unix timestamp (in seconds) for when the Part was created.
 	CreatedAt int64 `json:"created_at" api:"required"`
 	// The object type, which is always `upload.part`.
-	Object constant.UploadPart `json:"object" api:"required"`
+	Object constant.UploadPart `json:"object" default:"upload.part"`
 	// The ID of the Upload object that this Part was added to.
 	UploadID string `json:"upload_id" api:"required"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].

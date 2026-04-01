@@ -46,7 +46,7 @@ func (r *CompletionService) New(ctx context.Context, body CompletionNewParams, o
 	opts = slices.Concat(r.Options, opts)
 	path := "completions"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Creates a completion for the provided prompt and parameters.
@@ -77,7 +77,7 @@ type Completion struct {
 	// The model used for completion.
 	Model string `json:"model" api:"required"`
 	// The object type, which is always "text_completion"
-	Object constant.TextCompletion `json:"object" api:"required"`
+	Object constant.TextCompletion `json:"object" default:"text_completion"`
 	// This fingerprint represents the backend configuration that the model runs with.
 	//
 	// Can be used in conjunction with the `seed` request parameter to understand when

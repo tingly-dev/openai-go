@@ -1,5 +1,84 @@
 # Changelog
 
+## 3.30.0 (2026-03-25)
+
+Full Changelog: [v3.29.0...v3.30.0](https://github.com/openai/openai-go/compare/v3.29.0...v3.30.0)
+
+### Features
+
+* **api:** add keys field to computer action types ([7abb3c4](https://github.com/openai/openai-go/commit/7abb3c4b4d1fb3d2757dd70c5a201de4190f298a))
+
+
+### Bug Fixes
+
+* **api:** align SDK response types with expanded item schemas ([324c584](https://github.com/openai/openai-go/commit/324c584ec31315ec18c169918e524741e74d395a))
+* **types:** generate shared enum types that are not referenced by other schemas ([e2f2920](https://github.com/openai/openai-go/commit/e2f2920f510348ea8b7e26e6b2460f802d34998c))
+* **types:** make Type required, correct enum in ResponseInputMessageItem ([8c2c7a5](https://github.com/openai/openai-go/commit/8c2c7a59329e95da117ffdde7b36f43e1fbdbacb))
+
+
+### Chores
+
+* **ci:** skip lint on metadata-only changes ([40cf884](https://github.com/openai/openai-go/commit/40cf884295e1631dc637f6e3e1316e8665e5e694))
+* **client:** fix multipart serialisation of Default() fields ([06c04ae](https://github.com/openai/openai-go/commit/06c04aeca47e7348de94573eefbfaf2e110c4573))
+* **internal:** support default value struct tag ([f1afb2a](https://github.com/openai/openai-go/commit/f1afb2ab20307c50da7ec421ac5cd3e5a9c33fe3))
+* **internal:** update gitignore ([bde0a0d](https://github.com/openai/openai-go/commit/bde0a0d3e4a8b63e2ce28fae207f9546abac0722))
+* **tests:** bump steady to v0.19.4 ([a0561c3](https://github.com/openai/openai-go/commit/a0561c3014b5d5fbeee9d7de58dad3f9be9e2d9f))
+* **tests:** bump steady to v0.19.5 ([56c5c36](https://github.com/openai/openai-go/commit/56c5c3631cb1dec68b8cb68c1e03d62e69fe3a70))
+* **tests:** bump steady to v0.19.6 ([44ebe37](https://github.com/openai/openai-go/commit/44ebe3744e70460f2cacd94ccf21957e30d697a1))
+* **tests:** bump steady to v0.19.7 ([1b04072](https://github.com/openai/openai-go/commit/1b04072ef94542b2a0007e4088ef09d4f5387dcf))
+
+
+### Refactors
+
+* **tests:** switch from prism to steady ([2185358](https://github.com/openai/openai-go/commit/21853589203e202637f9ebc7f7be5d4c73f2a471))
+
+## 3.29.0 (2026-03-17)
+
+Full Changelog: [v3.28.0...v3.29.0](https://github.com/openai/openai-go/compare/v3.28.0...v3.29.0)
+
+### Features
+
+* **api:** 5.4 nano and mini model slugs ([c4ebb48](https://github.com/openai/openai-go/commit/c4ebb48b3314d41ae1ca8006ccf7d5b9facad61e))
+* **api:** add in and nin values to comparison filter type ([d060d44](https://github.com/openai/openai-go/commit/d060d4473d6ca87e0427eea709f87d5edd0e7c78))
+
+
+### Chores
+
+* **internal:** tweak CI branches ([6379626](https://github.com/openai/openai-go/commit/63796269b563770b6cbb24144edade0e57051e50))
+
+## 3.28.0 (2026-03-14)
+
+Full Changelog: [v3.27.0...v3.28.0](https://github.com/openai/openai-go/compare/v3.27.0...v3.28.0)
+
+### Features
+
+* **api:** add /v1/videos endpoint option to batch ([7b2d67e](https://github.com/openai/openai-go/commit/7b2d67e3d65737572d89536d16ed81a3ce39688f))
+* **api:** add defer_loading field to function tools ([6d4b683](https://github.com/openai/openai-go/commit/6d4b6833e5b0b29a9b1d0c99062a231290e8b93f))
+* **api:** custom voices ([d00b782](https://github.com/openai/openai-go/commit/d00b782c32db4c953b8e39edc5a77504693c70f3))
+
+### ⚠ BREAKING CHANGES
+
+* **api:** The `voice` param and resouce has changed from a `string` to a `string | {id: string}`. This is a breaking change for Go.
+
+## 3.27.0 (2026-03-13)
+
+Full Changelog: [v3.26.0...v3.27.0](https://github.com/openai/openai-go/compare/v3.26.0...v3.27.0)
+
+### Features
+
+* **api:** add video character/edit/extend, remove Azure/webhook/polling/accumulator ([20da043](https://github.com/openai/openai-go/commit/20da043643286aa444450f4bf4ab6f68c5401455))
+* **api:** add video edits/extensions/character, remove Azure/webhook/polling helpers ([fa9413f](https://github.com/openai/openai-go/commit/fa9413f9b7c00ec36b124c4b3714daf2b2cd978d))
+* **api:** api update ([c88c6c9](https://github.com/openai/openai-go/commit/c88c6c9732f7b7a8cd739b8006a56d564ab59183))
+* **api:** sora api improvements: character api, video extensions/edits, higher resolution exports. ([93f6779](https://github.com/openai/openai-go/commit/93f6779c0c2a1beb7f68b570c61aae8fda52fd1f))
+
+
+### Chores
+
+* **internal:** codegen related update ([d531232](https://github.com/openai/openai-go/commit/d5312325255bcac5934636d320653c338bb9622e))
+* **internal:** codegen related update ([1748c11](https://github.com/openai/openai-go/commit/1748c114b2d642b38fdacfef7823cbd4130c29c5))
+* **internal:** codegen related update ([531ece1](https://github.com/openai/openai-go/commit/531ece1703028189ba6081a168f3a979481dcf0c))
+* **internal:** codegen related update ([ce9f435](https://github.com/openai/openai-go/commit/ce9f4357c22b533fff0d3385058dbadc033928e8))
+
 ## 3.26.0 (2026-03-05)
 
 Full Changelog: [v3.25.0...v3.26.0](https://github.com/openai/openai-go/compare/v3.25.0...v3.26.0)

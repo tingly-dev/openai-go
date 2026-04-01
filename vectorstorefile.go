@@ -48,11 +48,11 @@ func (r *VectorStoreFileService) New(ctx context.Context, vectorStoreID string, 
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files", vectorStoreID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Create a vector store file by attaching a
@@ -100,15 +100,15 @@ func (r *VectorStoreFileService) Get(ctx context.Context, vectorStoreID string, 
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	if fileID == "" {
 		err = errors.New("missing required file_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files/%s", vectorStoreID, fileID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update attributes on a vector store file.
@@ -117,15 +117,15 @@ func (r *VectorStoreFileService) Update(ctx context.Context, vectorStoreID strin
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	if fileID == "" {
 		err = errors.New("missing required file_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files/%s", vectorStoreID, fileID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Returns a list of vector store files.
@@ -135,7 +135,7 @@ func (r *VectorStoreFileService) List(ctx context.Context, vectorStoreID string,
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2"), option.WithResponseInto(&raw)}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files", vectorStoreID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -164,15 +164,15 @@ func (r *VectorStoreFileService) Delete(ctx context.Context, vectorStoreID strin
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	if fileID == "" {
 		err = errors.New("missing required file_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files/%s", vectorStoreID, fileID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieve the parsed contents of a vector store file.
@@ -182,11 +182,11 @@ func (r *VectorStoreFileService) Content(ctx context.Context, vectorStoreID stri
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2"), option.WithResponseInto(&raw)}, opts...)
 	if vectorStoreID == "" {
 		err = errors.New("missing required vector_store_id parameter")
-		return
+		return nil, err
 	}
 	if fileID == "" {
 		err = errors.New("missing required file_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("vector_stores/%s/files/%s/content", vectorStoreID, fileID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, nil, &res, opts...)
@@ -216,7 +216,7 @@ type VectorStoreFile struct {
 	// are no errors.
 	LastError VectorStoreFileLastError `json:"last_error" api:"required"`
 	// The object type, which is always `vector_store.file`.
-	Object constant.VectorStoreFile `json:"object" api:"required"`
+	Object constant.VectorStoreFile `json:"object" default:"vector_store.file"`
 	// The status of the vector store file, which can be either `in_progress`,
 	// `completed`, `cancelled`, or `failed`. The status `completed` indicates that the
 	// vector store file is ready for use.
@@ -344,7 +344,7 @@ func (r *VectorStoreFileAttributeUnion) UnmarshalJSON(data []byte) error {
 type VectorStoreFileDeleted struct {
 	ID      string                          `json:"id" api:"required"`
 	Deleted bool                            `json:"deleted" api:"required"`
-	Object  constant.VectorStoreFileDeleted `json:"object" api:"required"`
+	Object  constant.VectorStoreFileDeleted `json:"object" default:"vector_store.file.deleted"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field

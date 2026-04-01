@@ -58,11 +58,11 @@ func (r *BetaThreadRunService) New(ctx context.Context, threadID string, params 
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs", threadID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	return res, err
 }
 
 // Create a run.
@@ -78,7 +78,7 @@ func (r *BetaThreadRunService) NewStreaming(ctx context.Context, threadID string
 	opts = append(opts, option.WithJSONSet("stream", true))
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return ssestream.NewStream[AssistantStreamEventUnion](nil, err)
 	}
 	path := fmt.Sprintf("threads/%s/runs", threadID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &raw, opts...)
@@ -93,15 +93,15 @@ func (r *BetaThreadRunService) Get(ctx context.Context, threadID string, runID s
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	if runID == "" {
 		err = errors.New("missing required run_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs/%s", threadID, runID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Modifies a run.
@@ -112,15 +112,15 @@ func (r *BetaThreadRunService) Update(ctx context.Context, threadID string, runI
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	if runID == "" {
 		err = errors.New("missing required run_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs/%s", threadID, runID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Returns a list of runs belonging to a thread.
@@ -132,7 +132,7 @@ func (r *BetaThreadRunService) List(ctx context.Context, threadID string, query 
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2"), option.WithResponseInto(&raw)}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs", threadID)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -162,15 +162,15 @@ func (r *BetaThreadRunService) Cancel(ctx context.Context, threadID string, runI
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	if runID == "" {
 		err = errors.New("missing required run_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs/%s/cancel", threadID, runID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // When a run has the `status: "requires_action"` and `required_action.type` is
@@ -184,15 +184,15 @@ func (r *BetaThreadRunService) SubmitToolOutputs(ctx context.Context, threadID s
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return nil, err
 	}
 	if runID == "" {
 		err = errors.New("missing required run_id parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("threads/%s/runs/%s/submit_tool_outputs", threadID, runID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // When a run has the `status: "requires_action"` and `required_action.type` is
@@ -211,11 +211,11 @@ func (r *BetaThreadRunService) SubmitToolOutputsStreaming(ctx context.Context, t
 	opts = append(opts, option.WithJSONSet("stream", true))
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
-		return
+		return ssestream.NewStream[AssistantStreamEventUnion](nil, err)
 	}
 	if runID == "" {
 		err = errors.New("missing required run_id parameter")
-		return
+		return ssestream.NewStream[AssistantStreamEventUnion](nil, err)
 	}
 	path := fmt.Sprintf("threads/%s/runs/%s/submit_tool_outputs", threadID, runID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &raw, opts...)
@@ -233,7 +233,7 @@ type RequiredActionFunctionToolCall struct {
 	Function RequiredActionFunctionToolCallFunction `json:"function" api:"required"`
 	// The type of tool call the output is required for. For now, this is always
 	// `function`.
-	Type constant.Function `json:"type" api:"required"`
+	Type constant.Function `json:"type" default:"function"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ID          respjson.Field
@@ -317,7 +317,7 @@ type Run struct {
 	// this run.
 	Model string `json:"model" api:"required"`
 	// The object type, which is always `thread.run`.
-	Object constant.ThreadRun `json:"object" api:"required"`
+	Object constant.ThreadRun `json:"object" default:"thread.run"`
 	// Whether to enable
 	// [parallel function calling](https://platform.openai.com/docs/guides/function-calling#configuring-parallel-function-calling)
 	// during tool use.
@@ -471,7 +471,7 @@ type RunRequiredAction struct {
 	// Details on the tool outputs needed for this run to continue.
 	SubmitToolOutputs RunRequiredActionSubmitToolOutputs `json:"submit_tool_outputs" api:"required"`
 	// For now, this is always `submit_tool_outputs`.
-	Type constant.SubmitToolOutputs `json:"type" api:"required"`
+	Type constant.SubmitToolOutputs `json:"type" default:"submit_tool_outputs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		SubmitToolOutputs respjson.Field
@@ -839,7 +839,7 @@ func NewBetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch() BetaTh
 // [NewBetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch].
 type BetaThreadRunNewParamsAdditionalMessageAttachmentToolFileSearch struct {
 	// The type of tool being defined: `file_search`
-	Type constant.FileSearch `json:"type" api:"required"`
+	Type constant.FileSearch `json:"type" default:"file_search"`
 	paramObj
 }
 
