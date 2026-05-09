@@ -41,7 +41,8 @@ func NewModelService(opts ...option.RequestOption) (r ModelService) {
 // Retrieves a model instance, providing basic information about the model such as
 // the owner and permissioning.
 func (r *ModelService) Get(ctx context.Context, model string, opts ...option.RequestOption) (res *Model, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if model == "" {
 		err = errors.New("missing required model parameter")
 		return nil, err
@@ -55,7 +56,8 @@ func (r *ModelService) Get(ctx context.Context, model string, opts ...option.Req
 // one such as the owner and availability.
 func (r *ModelService) List(ctx context.Context, opts ...option.RequestOption) (res *pagination.Page[Model], err error) {
 	var raw *http.Response
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "models"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, nil, &res, opts...)
@@ -79,7 +81,8 @@ func (r *ModelService) ListAutoPaging(ctx context.Context, opts ...option.Reques
 // Delete a fine-tuned model. You must have the Owner role in your organization to
 // delete a model.
 func (r *ModelService) Delete(ctx context.Context, model string, opts ...option.RequestOption) (res *ModelDeleted, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if model == "" {
 		err = errors.New("missing required model parameter")
 		return nil, err
@@ -94,7 +97,7 @@ type Model struct {
 	// The model identifier, which can be referenced in the API endpoints.
 	ID string `json:"id" api:"required"`
 	// The Unix timestamp (in seconds) when the model was created.
-	Created int64 `json:"created" api:"required"`
+	Created int64 `json:"created" api:"required" format:"unixtime"`
 	// The object type, which is always "model".
 	Object constant.Model `json:"object" default:"model"`
 	// The organization that owns the model.

@@ -26,10 +26,11 @@ func TestImageNewVariationWithOptionalParams(t *testing.T) {
 	client := openai.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
+		option.WithAdminAPIKey("My Admin API Key"),
 	)
 	_, err := client.Images.NewVariation(context.TODO(), openai.ImageNewVariationParams{
 		Image:          io.Reader(bytes.NewBuffer([]byte("Example data"))),
-		Model:          openai.ImageModelGPTImage1_5,
+		Model:          openai.ImageModelGPTImage1,
 		N:              openai.Int(1),
 		ResponseFormat: openai.ImageNewVariationParamsResponseFormatURL,
 		Size:           openai.ImageNewVariationParamsSize1024x1024,
@@ -55,6 +56,7 @@ func TestImageEditWithOptionalParams(t *testing.T) {
 	client := openai.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
+		option.WithAdminAPIKey("My Admin API Key"),
 	)
 	_, err := client.Images.Edit(context.TODO(), openai.ImageEditParams{
 		Image: openai.ImageEditParamsImageUnion{
@@ -64,14 +66,14 @@ func TestImageEditWithOptionalParams(t *testing.T) {
 		Background:        openai.ImageEditParamsBackgroundTransparent,
 		InputFidelity:     openai.ImageEditParamsInputFidelityHigh,
 		Mask:              io.Reader(bytes.NewBuffer([]byte("Example data"))),
-		Model:             openai.ImageModelGPTImage1_5,
+		Model:             openai.ImageModelGPTImage2,
 		N:                 openai.Int(1),
 		OutputCompression: openai.Int(100),
 		OutputFormat:      openai.ImageEditParamsOutputFormatPNG,
 		PartialImages:     openai.Int(1),
 		Quality:           openai.ImageEditParamsQualityHigh,
 		ResponseFormat:    openai.ImageEditParamsResponseFormatURL,
-		Size:              openai.ImageEditParamsSize1024x1024,
+		Size:              openai.ImageEditParamsSize256x256,
 		User:              openai.String("user-1234"),
 	})
 	if err != nil {
@@ -94,11 +96,12 @@ func TestImageGenerateWithOptionalParams(t *testing.T) {
 	client := openai.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My API Key"),
+		option.WithAdminAPIKey("My Admin API Key"),
 	)
 	_, err := client.Images.Generate(context.TODO(), openai.ImageGenerateParams{
 		Prompt:            "A cute baby sea otter",
 		Background:        openai.ImageGenerateParamsBackgroundTransparent,
-		Model:             openai.ImageModelGPTImage1_5,
+		Model:             openai.ImageModelGPTImage2,
 		Moderation:        openai.ImageGenerateParamsModerationLow,
 		N:                 openai.Int(1),
 		OutputCompression: openai.Int(100),
@@ -106,7 +109,7 @@ func TestImageGenerateWithOptionalParams(t *testing.T) {
 		PartialImages:     openai.Int(1),
 		Quality:           openai.ImageGenerateParamsQualityMedium,
 		ResponseFormat:    openai.ImageGenerateParamsResponseFormatURL,
-		Size:              openai.ImageGenerateParamsSize1024x1024,
+		Size:              openai.ImageGenerateParamsSizeAuto,
 		Style:             openai.ImageGenerateParamsStyleVivid,
 		User:              openai.String("user-1234"),
 	})

@@ -44,7 +44,8 @@ func NewFineTuningJobCheckpointService(opts ...option.RequestOption) (r FineTuni
 // List checkpoints for a fine-tuning job.
 func (r *FineTuningJobCheckpointService) List(ctx context.Context, fineTuningJobID string, query FineTuningJobCheckpointListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FineTuningJobCheckpoint], err error) {
 	var raw *http.Response
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if fineTuningJobID == "" {
 		err = errors.New("missing required fine_tuning_job_id parameter")
@@ -74,7 +75,7 @@ type FineTuningJobCheckpoint struct {
 	// The checkpoint identifier, which can be referenced in the API endpoints.
 	ID string `json:"id" api:"required"`
 	// The Unix timestamp (in seconds) for when the checkpoint was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The name of the fine-tuned checkpoint model that is created.
 	FineTunedModelCheckpoint string `json:"fine_tuned_model_checkpoint" api:"required"`
 	// The name of the fine-tuning job that this checkpoint was created from.

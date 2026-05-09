@@ -49,7 +49,8 @@ func NewBetaThreadRunStepService(opts ...option.RequestOption) (r BetaThreadRunS
 //
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadRunStepService) Get(ctx context.Context, threadID string, runID string, stepID string, query BetaThreadRunStepGetParams, opts ...option.RequestOption) (res *RunStep, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -73,7 +74,8 @@ func (r *BetaThreadRunStepService) Get(ctx context.Context, threadID string, run
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadRunStepService) List(ctx context.Context, threadID string, runID string, query BetaThreadRunStepListParams, opts ...option.RequestOption) (res *pagination.CursorPage[RunStep], err error) {
 	var raw *http.Response
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2"), option.WithResponseInto(&raw)}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -761,16 +763,16 @@ type RunStep struct {
 	// associated with the run step.
 	AssistantID string `json:"assistant_id" api:"required"`
 	// The Unix timestamp (in seconds) for when the run step was cancelled.
-	CancelledAt int64 `json:"cancelled_at" api:"required"`
+	CancelledAt int64 `json:"cancelled_at" api:"required" format:"unixtime"`
 	// The Unix timestamp (in seconds) for when the run step completed.
-	CompletedAt int64 `json:"completed_at" api:"required"`
+	CompletedAt int64 `json:"completed_at" api:"required" format:"unixtime"`
 	// The Unix timestamp (in seconds) for when the run step was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The Unix timestamp (in seconds) for when the run step expired. A step is
 	// considered expired if the parent run is expired.
-	ExpiredAt int64 `json:"expired_at" api:"required"`
+	ExpiredAt int64 `json:"expired_at" api:"required" format:"unixtime"`
 	// The Unix timestamp (in seconds) for when the run step failed.
-	FailedAt int64 `json:"failed_at" api:"required"`
+	FailedAt int64 `json:"failed_at" api:"required" format:"unixtime"`
 	// The last error associated with this run step. Will be `null` if there are no
 	// errors.
 	LastError RunStepLastError `json:"last_error" api:"required"`

@@ -50,7 +50,8 @@ func NewContainerFileService(opts ...option.RequestOption) (r ContainerFileServi
 // You can send either a multipart/form-data request with the raw file content, or
 // a JSON request with a file ID.
 func (r *ContainerFileService) New(ctx context.Context, containerID string, body ContainerFileNewParams, opts ...option.RequestOption) (res *ContainerFileNewResponse, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if containerID == "" {
 		err = errors.New("missing required container_id parameter")
 		return nil, err
@@ -62,7 +63,8 @@ func (r *ContainerFileService) New(ctx context.Context, containerID string, body
 
 // Retrieve Container File
 func (r *ContainerFileService) Get(ctx context.Context, containerID string, fileID string, opts ...option.RequestOption) (res *ContainerFileGetResponse, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if containerID == "" {
 		err = errors.New("missing required container_id parameter")
 		return nil, err
@@ -79,7 +81,8 @@ func (r *ContainerFileService) Get(ctx context.Context, containerID string, file
 // List Container files
 func (r *ContainerFileService) List(ctx context.Context, containerID string, query ContainerFileListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ContainerFileListResponse], err error) {
 	var raw *http.Response
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if containerID == "" {
 		err = errors.New("missing required container_id parameter")
@@ -105,7 +108,8 @@ func (r *ContainerFileService) ListAutoPaging(ctx context.Context, containerID s
 
 // Delete Container File
 func (r *ContainerFileService) Delete(ctx context.Context, containerID string, fileID string, opts ...option.RequestOption) (err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if containerID == "" {
 		err = errors.New("missing required container_id parameter")
@@ -128,7 +132,7 @@ type ContainerFileNewResponse struct {
 	// The container this file belongs to.
 	ContainerID string `json:"container_id" api:"required"`
 	// Unix timestamp (in seconds) when the file was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The type of this object (`container.file`).
 	Object constant.ContainerFile `json:"object" default:"container.file"`
 	// Path of the file in the container.
@@ -163,7 +167,7 @@ type ContainerFileGetResponse struct {
 	// The container this file belongs to.
 	ContainerID string `json:"container_id" api:"required"`
 	// Unix timestamp (in seconds) when the file was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The type of this object (`container.file`).
 	Object constant.ContainerFile `json:"object" default:"container.file"`
 	// Path of the file in the container.
@@ -198,7 +202,7 @@ type ContainerFileListResponse struct {
 	// The container this file belongs to.
 	ContainerID string `json:"container_id" api:"required"`
 	// Unix timestamp (in seconds) when the file was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The type of this object (`container.file`).
 	Object constant.ContainerFile `json:"object" default:"container.file"`
 	// Path of the file in the container.

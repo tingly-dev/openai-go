@@ -59,7 +59,8 @@ func NewResponseService(opts ...option.RequestOption) (r ResponseService) {
 // [file search](https://platform.openai.com/docs/guides/tools-file-search) to use
 // your own data as input for the model's response.
 func (r *ResponseService) New(ctx context.Context, body ResponseNewParams, opts ...option.RequestOption) (res *Response, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	path := "responses"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return res, err
@@ -81,7 +82,8 @@ func (r *ResponseService) NewStreaming(ctx context.Context, body ResponseNewPara
 		raw *http.Response
 		err error
 	)
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append(opts, option.WithJSONSet("stream", true))
 	path := "responses"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &raw, opts...)
@@ -90,7 +92,8 @@ func (r *ResponseService) NewStreaming(ctx context.Context, body ResponseNewPara
 
 // Retrieves a model response with the given ID.
 func (r *ResponseService) Get(ctx context.Context, responseID string, query ResponseGetParams, opts ...option.RequestOption) (res *Response, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if responseID == "" {
 		err = errors.New("missing required response_id parameter")
 		return nil, err
@@ -106,7 +109,8 @@ func (r *ResponseService) GetStreaming(ctx context.Context, responseID string, q
 		raw *http.Response
 		err error
 	)
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append(opts, option.WithJSONSet("stream", true))
 	if responseID == "" {
 		err = errors.New("missing required response_id parameter")
@@ -119,7 +123,8 @@ func (r *ResponseService) GetStreaming(ctx context.Context, responseID string, q
 
 // Deletes a model response with the given ID.
 func (r *ResponseService) Delete(ctx context.Context, responseID string, opts ...option.RequestOption) (err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if responseID == "" {
 		err = errors.New("missing required response_id parameter")
@@ -134,7 +139,8 @@ func (r *ResponseService) Delete(ctx context.Context, responseID string, opts ..
 // `background` parameter set to `true` can be cancelled.
 // [Learn more](https://platform.openai.com/docs/guides/background).
 func (r *ResponseService) Cancel(ctx context.Context, responseID string, opts ...option.RequestOption) (res *Response, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	if responseID == "" {
 		err = errors.New("missing required response_id parameter")
 		return nil, err
@@ -151,7 +157,8 @@ func (r *ResponseService) Cancel(ctx context.Context, responseID string, opts ..
 // For ZDR-compatible compaction details, see
 // [Compaction (advanced)](https://platform.openai.com/docs/guides/conversation-state#compaction-advanced).
 func (r *ResponseService) Compact(ctx context.Context, body ResponseCompactParams, opts ...option.RequestOption) (res *CompactedResponse, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	path := "responses/compact"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return res, err
@@ -211,7 +218,7 @@ type CompactedResponse struct {
 	// The unique identifier for the compacted response.
 	ID string `json:"id" api:"required"`
 	// Unix timestamp (in seconds) when the compacted conversation was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The object type. Always `response.compaction`.
 	Object constant.ResponseCompaction `json:"object" default:"response.compaction"`
 	// The compacted list of output items. This is a list of all user messages,
@@ -3202,7 +3209,7 @@ type Response struct {
 	// Unique identifier for this Response.
 	ID string `json:"id" api:"required"`
 	// Unix timestamp (in seconds) of when this Response was created.
-	CreatedAt float64 `json:"created_at" api:"required"`
+	CreatedAt float64 `json:"created_at" api:"required" format:"unixtime"`
 	// An error object returned when the model fails to generate a Response.
 	Error ResponseError `json:"error" api:"required"`
 	// Details about why the response is incomplete.
@@ -3278,7 +3285,7 @@ type Response struct {
 	Background bool `json:"background" api:"nullable"`
 	// Unix timestamp (in seconds) of when this Response was completed. Only present
 	// when the status is `completed`.
-	CompletedAt float64 `json:"completed_at" api:"nullable"`
+	CompletedAt float64 `json:"completed_at" api:"nullable" format:"unixtime"`
 	// The conversation that this response belonged to. Input items and output items
 	// from this response were automatically added to this conversation.
 	Conversation ResponseConversation `json:"conversation" api:"nullable"`
@@ -3308,7 +3315,7 @@ type Response struct {
 	// of 24 hours.
 	// [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
 	//
-	// Any of "in-memory", "24h".
+	// Any of "in_memory", "24h".
 	PromptCacheRetention ResponsePromptCacheRetention `json:"prompt_cache_retention" api:"nullable"`
 	// **gpt-5 and o-series models only**
 	//
@@ -3353,8 +3360,9 @@ type Response struct {
 	// - [Text inputs and outputs](https://platform.openai.com/docs/guides/text)
 	// - [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
 	Text ResponseTextConfig `json:"text"`
-	// An integer between 0 and 20 specifying the number of most likely tokens to
-	// return at each token position, each with an associated log probability.
+	// An integer between 0 and 20 specifying the maximum number of most likely tokens
+	// to return at each token position, each with an associated log probability. In
+	// some cases, the number of returned tokens may be fewer than requested.
 	TopLogprobs int64 `json:"top_logprobs" api:"nullable"`
 	// The truncation strategy to use for the model response.
 	//
@@ -3596,7 +3604,7 @@ func (r *ResponseConversation) UnmarshalJSON(data []byte) error {
 type ResponsePromptCacheRetention string
 
 const (
-	ResponsePromptCacheRetentionInMemory ResponsePromptCacheRetention = "in-memory"
+	ResponsePromptCacheRetentionInMemory ResponsePromptCacheRetention = "in_memory"
 	ResponsePromptCacheRetention24h      ResponsePromptCacheRetention = "24h"
 )
 
@@ -4256,7 +4264,7 @@ type ResponseCodeInterpreterToolCallOutputImage struct {
 	// The type of the output. Always `image`.
 	Type constant.Image `json:"type" default:"image"`
 	// The URL of the image output from the code interpreter.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Type        respjson.Field
@@ -4403,7 +4411,7 @@ func (r *ResponseCodeInterpreterToolCallOutputLogsParam) UnmarshalJSON(data []by
 // The properties Type, URL are required.
 type ResponseCodeInterpreterToolCallOutputImageParam struct {
 	// The URL of the image output from the code interpreter.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// The type of the output. Always `image`.
 	//
 	// This field can be elided, and will marshal its zero value as "image".
@@ -5632,7 +5640,7 @@ type ResponseComputerToolCallOutputScreenshot struct {
 	// The identifier of an uploaded file that contains the screenshot.
 	FileID string `json:"file_id"`
 	// The URL of the screenshot image.
-	ImageURL string `json:"image_url"`
+	ImageURL string `json:"image_url" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Type        respjson.Field
@@ -5666,7 +5674,7 @@ type ResponseComputerToolCallOutputScreenshotParam struct {
 	// The identifier of an uploaded file that contains the screenshot.
 	FileID param.Opt[string] `json:"file_id,omitzero"`
 	// The URL of the screenshot image.
-	ImageURL param.Opt[string] `json:"image_url,omitzero"`
+	ImageURL param.Opt[string] `json:"image_url,omitzero" format:"uri"`
 	// Specifies the event type. For a computer screenshot, this property is always set
 	// to `computer_screenshot`.
 	//
@@ -8552,7 +8560,7 @@ type ResponseFunctionWebSearchActionSearchSource struct {
 	// The type of source. Always `url`.
 	Type constant.URL `json:"type" default:"url"`
 	// The URL of the source.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Type        respjson.Field
@@ -8774,7 +8782,7 @@ func (r *ResponseFunctionWebSearchActionSearchParam) UnmarshalJSON(data []byte) 
 // The properties Type, URL are required.
 type ResponseFunctionWebSearchActionSearchSourceParam struct {
 	// The URL of the source.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// The type of source. Always `url`.
 	//
 	// This field can be elided, and will marshal its zero value as "url".
@@ -8978,6 +8986,8 @@ func (r *ResponseInProgressEvent) UnmarshalJSON(data []byte) error {
 // Specify additional output data to include in the model response. Currently
 // supported values are:
 //
+//   - `web_search_call.results`: Include the search results of the web search tool
+//     call.
 //   - `web_search_call.action.sources`: Include the sources of the web search tool
 //     call.
 //   - `code_interpreter_call.outputs`: Includes the outputs of python code execution
@@ -9362,7 +9372,7 @@ type ResponseInputFile struct {
 	// The ID of the file to be sent to the model.
 	FileID string `json:"file_id" api:"nullable"`
 	// The URL of the file to be sent to the model.
-	FileURL string `json:"file_url"`
+	FileURL string `json:"file_url" format:"uri"`
 	// The name of the file to be sent to the model.
 	Filename string `json:"filename"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
@@ -9414,7 +9424,7 @@ type ResponseInputFileParam struct {
 	// The content of the file to be sent to the model.
 	FileData param.Opt[string] `json:"file_data,omitzero"`
 	// The URL of the file to be sent to the model.
-	FileURL param.Opt[string] `json:"file_url,omitzero"`
+	FileURL param.Opt[string] `json:"file_url,omitzero" format:"uri"`
 	// The name of the file to be sent to the model.
 	Filename param.Opt[string] `json:"filename,omitzero"`
 	// The detail level of the file to be sent to the model. Use `low` for the default
@@ -9453,7 +9463,7 @@ type ResponseInputFileContent struct {
 	// The ID of the file to be sent to the model.
 	FileID string `json:"file_id" api:"nullable"`
 	// The URL of the file to be sent to the model.
-	FileURL string `json:"file_url" api:"nullable"`
+	FileURL string `json:"file_url" api:"nullable" format:"uri"`
 	// The name of the file to be sent to the model.
 	Filename string `json:"filename" api:"nullable"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
@@ -9504,7 +9514,7 @@ type ResponseInputFileContentParam struct {
 	// The ID of the file to be sent to the model.
 	FileID param.Opt[string] `json:"file_id,omitzero"`
 	// The URL of the file to be sent to the model.
-	FileURL param.Opt[string] `json:"file_url,omitzero"`
+	FileURL param.Opt[string] `json:"file_url,omitzero" format:"uri"`
 	// The name of the file to be sent to the model.
 	Filename param.Opt[string] `json:"filename,omitzero"`
 	// The detail level of the file to be sent to the model. Use `low` for the default
@@ -9542,7 +9552,7 @@ type ResponseInputImage struct {
 	FileID string `json:"file_id" api:"nullable"`
 	// The URL of the image to be sent to the model. A fully qualified URL or base64
 	// encoded image in a data URL.
-	ImageURL string `json:"image_url" api:"nullable"`
+	ImageURL string `json:"image_url" api:"nullable" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Detail      respjson.Field
@@ -9596,7 +9606,7 @@ type ResponseInputImageParam struct {
 	FileID param.Opt[string] `json:"file_id,omitzero"`
 	// The URL of the image to be sent to the model. A fully qualified URL or base64
 	// encoded image in a data URL.
-	ImageURL param.Opt[string] `json:"image_url,omitzero"`
+	ImageURL param.Opt[string] `json:"image_url,omitzero" format:"uri"`
 	// The type of the input item. Always `input_image`.
 	//
 	// This field can be elided, and will marshal its zero value as "input_image".
@@ -9626,7 +9636,7 @@ type ResponseInputImageContent struct {
 	FileID string `json:"file_id" api:"nullable"`
 	// The URL of the image to be sent to the model. A fully qualified URL or base64
 	// encoded image in a data URL.
-	ImageURL string `json:"image_url" api:"nullable"`
+	ImageURL string `json:"image_url" api:"nullable" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Type        respjson.Field
@@ -9674,7 +9684,7 @@ type ResponseInputImageContentParam struct {
 	FileID param.Opt[string] `json:"file_id,omitzero"`
 	// The URL of the image to be sent to the model. A fully qualified URL or base64
 	// encoded image in a data URL.
-	ImageURL param.Opt[string] `json:"image_url,omitzero"`
+	ImageURL param.Opt[string] `json:"image_url,omitzero" format:"uri"`
 	// The detail level of the image to be sent to the model. One of `high`, `low`,
 	// `auto`, or `original`. Defaults to `auto`.
 	//
@@ -15924,7 +15934,7 @@ type ResponseOutputTextAnnotationURLCitation struct {
 	// The type of the URL citation. Always `url_citation`.
 	Type constant.URLCitation `json:"type" default:"url_citation"`
 	// The URL of the web resource.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		EndIndex    respjson.Field
@@ -16235,7 +16245,7 @@ type ResponseOutputTextAnnotationURLCitationParam struct {
 	// The title of the web resource.
 	Title string `json:"title" api:"required"`
 	// The URL of the web resource.
-	URL string `json:"url" api:"required"`
+	URL string `json:"url" api:"required" format:"uri"`
 	// The type of the URL citation. Always `url_citation`.
 	//
 	// This field can be elided, and will marshal its zero value as "url_citation".
@@ -17969,7 +17979,7 @@ type ResponseTextDeltaEventLogprob struct {
 	Token string `json:"token" api:"required"`
 	// The log probability of this token.
 	Logprob float64 `json:"logprob" api:"required"`
-	// The log probability of the top 20 most likely tokens.
+	// The log probabilities of up to 20 of the most likely tokens.
 	TopLogprobs []ResponseTextDeltaEventLogprobTopLogprob `json:"top_logprobs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
@@ -18051,7 +18061,7 @@ type ResponseTextDoneEventLogprob struct {
 	Token string `json:"token" api:"required"`
 	// The log probability of this token.
 	Logprob float64 `json:"logprob" api:"required"`
-	// The log probability of the top 20 most likely tokens.
+	// The log probabilities of up to 20 of the most likely tokens.
 	TopLogprobs []ResponseTextDoneEventLogprobTopLogprob `json:"top_logprobs"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
@@ -18887,7 +18897,7 @@ type ToolMcp struct {
 	ServerDescription string `json:"server_description"`
 	// The URL for the MCP server. One of `server_url` or `connector_id` must be
 	// provided.
-	ServerURL string `json:"server_url"`
+	ServerURL string `json:"server_url" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		ServerLabel       respjson.Field
@@ -19278,8 +19288,18 @@ type ToolImageGeneration struct {
 	//
 	// Any of "generate", "edit", "auto".
 	Action string `json:"action"`
-	// Background type for the generated image. One of `transparent`, `opaque`, or
-	// `auto`. Default: `auto`.
+	// Allows to set transparency for the background of the generated image(s). This
+	// parameter is only supported for GPT image models that support transparent
+	// backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value).
+	// When `auto` is used, the model will automatically determine the best background
+	// for the image.
+	//
+	// `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent
+	// backgrounds. Requests with `background` set to `transparent` will return an
+	// error for these models; use `opaque` or `auto` instead.
+	//
+	// If `transparent`, the output format needs to support transparency, so it should
+	// be set to either `png` (default value) or `webp`.
 	//
 	// Any of "transparent", "opaque", "auto".
 	Background string `json:"background"`
@@ -19314,10 +19334,17 @@ type ToolImageGeneration struct {
 	//
 	// Any of "low", "medium", "high", "auto".
 	Quality string `json:"quality"`
-	// The size of the generated image. One of `1024x1024`, `1024x1536`, `1536x1024`,
-	// or `auto`. Default: `auto`.
-	//
-	// Any of "1024x1024", "1024x1536", "1536x1024", "auto".
+	// The size of the generated images. For `gpt-image-2` and
+	// `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+	// strings, for example `1536x864`. Width and height must both be divisible by 16
+	// and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above
+	// `2560x1440` are experimental, and the maximum supported resolution is
+	// `3840x2160`. The requested size must also satisfy the model's current pixel and
+	// edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
+	// supported by the GPT image models; `auto` is supported for models that allow
+	// automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
+	// `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or
+	// `1024x1792`.
 	Size string `json:"size"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
@@ -20170,7 +20197,7 @@ type ToolMcpParam struct {
 	ServerDescription param.Opt[string] `json:"server_description,omitzero"`
 	// The URL for the MCP server. One of `server_url` or `connector_id` must be
 	// provided.
-	ServerURL param.Opt[string] `json:"server_url,omitzero"`
+	ServerURL param.Opt[string] `json:"server_url,omitzero" format:"uri"`
 	// List of allowed tool names or a filter object.
 	AllowedTools ToolMcpAllowedToolsUnionParam `json:"allowed_tools,omitzero"`
 	// Optional HTTP headers to send to the MCP server. Use for authentication or other
@@ -20510,8 +20537,18 @@ type ToolImageGenerationParam struct {
 	//
 	// Any of "generate", "edit", "auto".
 	Action string `json:"action,omitzero"`
-	// Background type for the generated image. One of `transparent`, `opaque`, or
-	// `auto`. Default: `auto`.
+	// Allows to set transparency for the background of the generated image(s). This
+	// parameter is only supported for GPT image models that support transparent
+	// backgrounds. Must be one of `transparent`, `opaque`, or `auto` (default value).
+	// When `auto` is used, the model will automatically determine the best background
+	// for the image.
+	//
+	// `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent
+	// backgrounds. Requests with `background` set to `transparent` will return an
+	// error for these models; use `opaque` or `auto` instead.
+	//
+	// If `transparent`, the output format needs to support transparency, so it should
+	// be set to either `png` (default value) or `webp`.
 	//
 	// Any of "transparent", "opaque", "auto".
 	Background string `json:"background,omitzero"`
@@ -20534,10 +20571,17 @@ type ToolImageGenerationParam struct {
 	//
 	// Any of "low", "medium", "high", "auto".
 	Quality string `json:"quality,omitzero"`
-	// The size of the generated image. One of `1024x1024`, `1024x1536`, `1536x1024`,
-	// or `auto`. Default: `auto`.
-	//
-	// Any of "1024x1024", "1024x1536", "1536x1024", "auto".
+	// The size of the generated images. For `gpt-image-2` and
+	// `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT`
+	// strings, for example `1536x864`. Width and height must both be divisible by 16
+	// and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above
+	// `2560x1440` are experimental, and the maximum supported resolution is
+	// `3840x2160`. The requested size must also satisfy the model's current pixel and
+	// edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are
+	// supported by the GPT image models; `auto` is supported for models that allow
+	// automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or
+	// `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or
+	// `1024x1792`.
 	Size string `json:"size,omitzero"`
 	// The type of the image generation tool. Always `image_generation`.
 	//
@@ -20572,9 +20616,6 @@ func init() {
 	)
 	apijson.RegisterFieldValidator[ToolImageGenerationParam](
 		"quality", "low", "medium", "high", "auto",
-	)
-	apijson.RegisterFieldValidator[ToolImageGenerationParam](
-		"size", "1024x1024", "1024x1536", "1536x1024", "auto",
 	)
 }
 
@@ -21560,8 +21601,9 @@ type ResponseNewParams struct {
 	// focused and deterministic. We generally recommend altering this or `top_p` but
 	// not both.
 	Temperature param.Opt[float64] `json:"temperature,omitzero"`
-	// An integer between 0 and 20 specifying the number of most likely tokens to
-	// return at each token position, each with an associated log probability.
+	// An integer between 0 and 20 specifying the maximum number of most likely tokens
+	// to return at each token position, each with an associated log probability. In
+	// some cases, the number of returned tokens may be fewer than requested.
 	TopLogprobs param.Opt[int64] `json:"top_logprobs,omitzero"`
 	// An alternative to sampling with temperature, called nucleus sampling, where the
 	// model considers the results of the tokens with top_p probability mass. So 0.1
@@ -21627,7 +21669,7 @@ type ResponseNewParams struct {
 	// of 24 hours.
 	// [Learn more](https://platform.openai.com/docs/guides/prompt-caching#prompt-cache-retention).
 	//
-	// Any of "in-memory", "24h".
+	// Any of "in_memory", "24h".
 	PromptCacheRetention ResponseNewParamsPromptCacheRetention `json:"prompt_cache_retention,omitzero"`
 	// Specifies the processing type used for serving the request.
 	//
@@ -21796,7 +21838,7 @@ func (u *ResponseNewParamsInputUnion) asAny() any {
 type ResponseNewParamsPromptCacheRetention string
 
 const (
-	ResponseNewParamsPromptCacheRetentionInMemory ResponseNewParamsPromptCacheRetention = "in-memory"
+	ResponseNewParamsPromptCacheRetentionInMemory ResponseNewParamsPromptCacheRetention = "in_memory"
 	ResponseNewParamsPromptCacheRetention24h      ResponseNewParamsPromptCacheRetention = "24h"
 )
 

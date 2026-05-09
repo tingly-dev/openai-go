@@ -49,7 +49,8 @@ func NewBetaThreadMessageService(opts ...option.RequestOption) (r BetaThreadMess
 //
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadMessageService) New(ctx context.Context, threadID string, body BetaThreadMessageNewParams, opts ...option.RequestOption) (res *Message, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -64,7 +65,8 @@ func (r *BetaThreadMessageService) New(ctx context.Context, threadID string, bod
 //
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadMessageService) Get(ctx context.Context, threadID string, messageID string, opts ...option.RequestOption) (res *Message, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -83,7 +85,8 @@ func (r *BetaThreadMessageService) Get(ctx context.Context, threadID string, mes
 //
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadMessageService) Update(ctx context.Context, threadID string, messageID string, body BetaThreadMessageUpdateParams, opts ...option.RequestOption) (res *Message, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -103,7 +106,8 @@ func (r *BetaThreadMessageService) Update(ctx context.Context, threadID string, 
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadMessageService) List(ctx context.Context, threadID string, query BetaThreadMessageListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Message], err error) {
 	var raw *http.Response
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2"), option.WithResponseInto(&raw)}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -133,7 +137,8 @@ func (r *BetaThreadMessageService) ListAutoPaging(ctx context.Context, threadID 
 //
 // Deprecated: The Assistants API is deprecated in favor of the Responses API
 func (r *BetaThreadMessageService) Delete(ctx context.Context, threadID string, messageID string, opts ...option.RequestOption) (res *MessageDeleted, err error) {
-	opts = slices.Concat(r.Options, opts)
+	var preClientOpts = []option.RequestOption{requestconfig.WithBearerAuthSecurity()}
+	opts = slices.Concat(preClientOpts, r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("OpenAI-Beta", "assistants=v2")}, opts...)
 	if threadID == "" {
 		err = errors.New("missing required thread_id parameter")
@@ -780,7 +785,7 @@ type ImageURLDelta struct {
 	Detail ImageURLDeltaDetail `json:"detail"`
 	// The URL of the image, must be a supported image types: jpeg, jpg, png, gif,
 	// webp.
-	URL string `json:"url"`
+	URL string `json:"url" format:"uri"`
 	// JSON contains metadata for fields, check presence with [respjson.Field.Valid].
 	JSON struct {
 		Detail      respjson.Field
@@ -841,13 +846,13 @@ type Message struct {
 	// A list of files attached to the message, and the tools they were added to.
 	Attachments []MessageAttachment `json:"attachments" api:"required"`
 	// The Unix timestamp (in seconds) for when the message was completed.
-	CompletedAt int64 `json:"completed_at" api:"required"`
+	CompletedAt int64 `json:"completed_at" api:"required" format:"unixtime"`
 	// The content of the message in array of text and/or images.
 	Content []MessageContentUnion `json:"content" api:"required"`
 	// The Unix timestamp (in seconds) for when the message was created.
-	CreatedAt int64 `json:"created_at" api:"required"`
+	CreatedAt int64 `json:"created_at" api:"required" format:"unixtime"`
 	// The Unix timestamp (in seconds) for when the message was marked as incomplete.
-	IncompleteAt int64 `json:"incomplete_at" api:"required"`
+	IncompleteAt int64 `json:"incomplete_at" api:"required" format:"unixtime"`
 	// On an incomplete message, details about why the message is incomplete.
 	IncompleteDetails MessageIncompleteDetails `json:"incomplete_details" api:"required"`
 	// Set of 16 key-value pairs that can be attached to an object. This can be useful
