@@ -178,7 +178,6 @@ import (
 func Marshal(v any, opts ...Option) ([]byte, error) {
 	// EDIT(end): add optimization options
 	e := newEncodeState()
-	defer encodeStatePool.Put(e)
 
 	// EDIT(begin): don't escape HTML by default, and apply options
 	encOpts := encOpts{escapeHTML: shims.EscapeHTMLByDefault}
@@ -292,20 +291,14 @@ type encodeState struct {
 
 const startDetectingCyclesAfter = 1000
 
-var encodeStatePool sync.Pool
-
+// EDIT(begin): remove encodeStatePool — LLM proxy workloads have highly variable
+// marshal sizes; pooling large buffers causes them to be retained indefinitely.
+// Each call now allocates fresh, letting GC reclaim memory on its own schedule.
 func newEncodeState() *encodeState {
-	if v := encodeStatePool.Get(); v != nil {
-		e := v.(*encodeState)
-		e.Reset()
-		if len(e.ptrSeen) > 0 {
-			panic("ptrEncoder.encode should have emptied ptrSeen via defers")
-		}
-		e.ptrLevel = 0
-		return e
-	}
 	return &encodeState{ptrSeen: make(map[any]struct{})}
 }
+
+// EDIT(end)
 
 // jsonError is an error wrapper type for internal use only.
 // Panics with errors are wrapped in jsonError so that the top-level recover

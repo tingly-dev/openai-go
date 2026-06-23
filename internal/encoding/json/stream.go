@@ -204,8 +204,6 @@ func (enc *Encoder) Encode(v any) error {
 	}
 
 	e := newEncodeState()
-	defer encodeStatePool.Put(e)
-
 	err := e.marshal(v, encOpts{escapeHTML: enc.escapeHTML})
 	if err != nil {
 		return err
