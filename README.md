@@ -30,7 +30,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/openai/openai-go/v3@v3.41.0'
+go get -u 'github.com/openai/openai-go/v3@v3.42.0'
 ```
 
 <!-- x-release-please-end -->
@@ -1046,9 +1046,9 @@ client := openai.NewClient(
 )
 ```
 
-## Microsoft Azure OpenAI
+## Azure OpenAI in Azure AI Foundry Models
 
-To use this library with [Azure OpenAI]https://learn.microsoft.com/azure/ai-services/openai/overview),
+To use this library with [Azure OpenAI in Azure AI Foundry Models](https://learn.microsoft.com/azure/ai-services/openai/overview),
 use the option.RequestOption functions in the `azure` package.
 
 ```go
