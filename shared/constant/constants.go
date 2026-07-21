@@ -173,7 +173,6 @@ type McpListTools string                                     // Always "mcp_list
 type McpListToolsCompleted string                            // Always "mcp_list_tools.completed"
 type McpListToolsFailed string                               // Always "mcp_list_tools.failed"
 type McpListToolsInProgress string                           // Always "mcp_list_tools.in_progress"
-type Member string                                           // Always "member"
 type Message string                                          // Always "message"
 type MessageCreation string                                  // Always "message_creation"
 type Model string                                            // Always "model"
@@ -317,7 +316,6 @@ type ResponseWebSearchCallSearching string                   // Always "response
 type RetentionRatio string                                   // Always "retention_ratio"
 type Role string                                             // Always "role"
 type RoleDeleted string                                      // Always "role.deleted"
-type SafetyIdentifierBlocked string                          // Always "safety_identifier.blocked"
 type ScoreModel string                                       // Always "score_model"
 type Screenshot string                                       // Always "screenshot"
 type Scroll string                                           // Always "scroll"
@@ -610,7 +608,6 @@ func (c McpListTools) Default() McpListTools                     { return "mcp_l
 func (c McpListToolsCompleted) Default() McpListToolsCompleted   { return "mcp_list_tools.completed" }
 func (c McpListToolsFailed) Default() McpListToolsFailed         { return "mcp_list_tools.failed" }
 func (c McpListToolsInProgress) Default() McpListToolsInProgress { return "mcp_list_tools.in_progress" }
-func (c Member) Default() Member                                 { return "member" }
 func (c Message) Default() Message                               { return "message" }
 func (c MessageCreation) Default() MessageCreation               { return "message_creation" }
 func (c Model) Default() Model                                   { return "model" }
@@ -912,9 +909,6 @@ func (c ResponseWebSearchCallSearching) Default() ResponseWebSearchCallSearching
 func (c RetentionRatio) Default() RetentionRatio { return "retention_ratio" }
 func (c Role) Default() Role                     { return "role" }
 func (c RoleDeleted) Default() RoleDeleted       { return "role.deleted" }
-func (c SafetyIdentifierBlocked) Default() SafetyIdentifierBlocked {
-	return "safety_identifier.blocked"
-}
 func (c ScoreModel) Default() ScoreModel         { return "score_model" }
 func (c Screenshot) Default() Screenshot         { return "screenshot" }
 func (c Scroll) Default() Scroll                 { return "scroll" }
@@ -1199,7 +1193,6 @@ func (c McpListTools) MarshalJSON() ([]byte, error)                        { ret
 func (c McpListToolsCompleted) MarshalJSON() ([]byte, error)               { return marshalString(c) }
 func (c McpListToolsFailed) MarshalJSON() ([]byte, error)                  { return marshalString(c) }
 func (c McpListToolsInProgress) MarshalJSON() ([]byte, error)              { return marshalString(c) }
-func (c Member) MarshalJSON() ([]byte, error)                              { return marshalString(c) }
 func (c Message) MarshalJSON() ([]byte, error)                             { return marshalString(c) }
 func (c MessageCreation) MarshalJSON() ([]byte, error)                     { return marshalString(c) }
 func (c Model) MarshalJSON() ([]byte, error)                               { return marshalString(c) }
@@ -1359,7 +1352,6 @@ func (c ResponseWebSearchCallSearching) MarshalJSON() ([]byte, error)     { retu
 func (c RetentionRatio) MarshalJSON() ([]byte, error)                     { return marshalString(c) }
 func (c Role) MarshalJSON() ([]byte, error)                               { return marshalString(c) }
 func (c RoleDeleted) MarshalJSON() ([]byte, error)                        { return marshalString(c) }
-func (c SafetyIdentifierBlocked) MarshalJSON() ([]byte, error)            { return marshalString(c) }
 func (c ScoreModel) MarshalJSON() ([]byte, error)                         { return marshalString(c) }
 func (c Screenshot) MarshalJSON() ([]byte, error)                         { return marshalString(c) }
 func (c Scroll) MarshalJSON() ([]byte, error)                             { return marshalString(c) }
