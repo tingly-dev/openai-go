@@ -2963,12 +2963,14 @@ func ChatCompletionMessageParamOfAssistant[
 	return ChatCompletionMessageParamUnion{OfAssistant: &assistant}
 }
 
-func ToolMessage[T string | []ChatCompletionContentPartTextParam](content T, toolCallID string) ChatCompletionMessageParamUnion {
+func ToolMessage[T string | []ChatCompletionContentPartTextParam | []ChatCompletionContentPartUnionParam](content T, toolCallID string) ChatCompletionMessageParamUnion {
 	var tool ChatCompletionToolMessageParam
 	switch v := any(content).(type) {
 	case string:
 		tool.Content.OfString = param.NewOpt(v)
 	case []ChatCompletionContentPartTextParam:
+		tool.Content.OfArrayOfContentParts = liftToolMessageTextParts(v)
+	case []ChatCompletionContentPartUnionParam:
 		tool.Content.OfArrayOfContentParts = v
 	}
 	tool.ToolCallID = toolCallID
@@ -3858,8 +3860,10 @@ func (r *ChatCompletionToolMessageParam) UnmarshalJSON(data []byte) error {
 //
 // Use [param.IsOmitted] to confirm if a field is set.
 type ChatCompletionToolMessageParamContentUnion struct {
-	OfString              param.Opt[string]                    `json:",omitzero,inline"`
-	OfArrayOfContentParts []ChatCompletionContentPartTextParam `json:",omitzero,inline"`
+	OfString param.Opt[string] `json:",omitzero,inline"`
+	// Tingly extension: widened from []ChatCompletionContentPartTextParam to the
+	// full content-part union. See chatcompletion_toolmessage_patch.go.
+	OfArrayOfContentParts []ChatCompletionContentPartUnionParam `json:",omitzero,inline"`
 	paramUnion
 }
 
