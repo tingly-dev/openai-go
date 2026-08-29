@@ -2519,17 +2519,24 @@ func (r *ChatCompletionMessage) UnmarshalJSON(data []byte) error {
 }
 
 // extraFieldsToAny converts ExtraFields from response type to a format suitable for request params.
+//
+// Note: unknown/extra fields in respjson.Field are ALWAYS marked status=invalid
+// ("couldn't be marshaled to a known type", raw JSON preserved) — Field.Valid()
+// is false for every real extra field, so we must NOT filter on Valid().
+// Filter on raw presence instead, skipping explicit nulls.
 func extraFieldsToAny(extraFields map[string]respjson.Field) map[string]any {
 	if len(extraFields) == 0 {
 		return nil
 	}
 	result := make(map[string]any, len(extraFields))
 	for k, v := range extraFields {
-		if v.Valid() {
-			var val any
-			if err := json.Unmarshal([]byte(v.Raw()), &val); err == nil {
-				result[k] = val
-			}
+		raw := v.Raw()
+		if raw == "" || raw == respjson.Null {
+			continue
+		}
+		var val any
+		if err := json.Unmarshal([]byte(raw), &val); err == nil {
+			result[k] = val
 		}
 	}
 	return result
