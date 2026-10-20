@@ -410,3 +410,15 @@ func WithWorkloadIdentity(config auth.WorkloadIdentity) RequestOption {
 		}).Apply(r)
 	})
 }
+
+// WithoutEnvironmentDefaults returns a RequestOption that, when passed to
+// openai.NewClient, skips every ambient OPENAI_* default (OPENAI_API_KEY,
+// OPENAI_ORG_ID, OPENAI_PROJECT_ID, OPENAI_BASE_URL, OPENAI_CUSTOM_HEADERS, ...).
+// The regular transport defaults and the production base URL still apply.
+//
+// Use it for clients that talk to a provider other than the one the process
+// environment is configured for, so environment credentials and headers are
+// never sent to it.
+func WithoutEnvironmentDefaults() RequestOption {
+	return requestconfig.WithEnvironmentDefaultsDisabled()
+}
