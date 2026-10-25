@@ -23,7 +23,6 @@ import (
 	"github.com/openai/openai-go/v3/internal/apierror"
 	"github.com/openai/openai-go/v3/internal/apiform"
 	"github.com/openai/openai-go/v3/internal/apiquery"
-	"github.com/tidwall/gjson"
 )
 
 // DefaultMaxServerDelay bounds fallback backoff, token exchange, and polling waits.
@@ -758,8 +757,7 @@ func (cfg *RequestConfig) Execute() (err error) {
 
 		// Load the contents into the error format if it is provided.
 		aerr := apierror.Error{Request: cfg.Request, Response: res, StatusCode: res.StatusCode}
-		unwrapped := gjson.GetBytes(contents, "error").Raw
-		err = aerr.UnmarshalJSON([]byte(unwrapped))
+		err = aerr.UnmarshalJSON(unwrapErrorBody(contents))
 		if err != nil {
 			return err
 		}
