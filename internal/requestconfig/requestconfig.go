@@ -1021,6 +1021,9 @@ func unwrapErrorBody(contents []byte) []byte {
 			text = strings.TrimSpace(string(contents))
 		}
 	}
-	out, _ := json.Marshal(map[string]string{"message": text})
+	out, err := json.Marshal(map[string]string{"message": text})
+	if err != nil {
+		return []byte(`{}`)
+	}
 	return out
 }
